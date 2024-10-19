@@ -1,2 +1,2 @@
-# bachelor_thesis
+# Bachelor thesis Information science
 Number oriented steganography
