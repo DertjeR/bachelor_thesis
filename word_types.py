@@ -1,7 +1,7 @@
 from typing import Dict, List, Any
 
-lidwoorden = "de"
-voorzetsels = "naar"
+article = "de"
+preposition = "naar"
 
 nouns = {
     40:"afstandsbediening",
