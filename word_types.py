@@ -1,5 +1,3 @@
-from typing import Dict, List, Any
-
 article = "de"
 preposition = "naar"
 

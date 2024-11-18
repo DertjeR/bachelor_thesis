@@ -2,9 +2,10 @@ import sys
 from typing import Dict, List
 from word_types import *
 from sentence_structures import *
+from _get_database import *
 
 
-def get_message() -> str:
+def get_message(messages: List[str]) -> str:
     pass
 
 def split_text(original_text: str) -> str:
@@ -40,7 +41,9 @@ def get_words(sents_structure: List[str], n: Dict[int, str],
     pass
 
 def main():
-    message = get_message()
+    file = 'dutch_database'
+    messages = read_file(file)
+    message = get_message(messages)
     clean_text = preprocess(message)
     chars = char_to_octal(clean_text)
 
