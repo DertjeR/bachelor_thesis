@@ -41,8 +41,8 @@ def get_words(sents_structure: List[str], n: Dict[int, str],
     pass
 
 def main():
-    file = 'dutch_database'
-    messages = read_file(file)
+    file = "database.xml.gz"
+    messages = make_database(file)
     message = get_message(messages)
     clean_text = preprocess(message)
     chars = char_to_octal(clean_text)

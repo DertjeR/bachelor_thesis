@@ -1,24 +1,27 @@
-import spacy
-import json
+import gzip
 from typing import List
+from lxml import etree
 
+def make_database(gz_file) -> List[str]:
+    abstracts_list = []
 
-def read_file(file_name: str) -> List[str]:
+    # Set the maximum number of abstracts to collect to increase efficiency
+    max_abstracts = 20
+
+    # Open the gzipped file and parse with lxml
+    with gzip.open(gz_file, "rb") as f:
+        for _, elem in etree.iterparse(f, tag="doc"):
+            abstract = elem.find("abstract")
+            if abstract is not None and abstract.text:
+                abstracts_list.append(abstract.text.strip())
+
+            if len(abstracts_list) >= max_abstracts:
+                break
+
+            elem.clear()
+
+    # For test purposes
+    for abstract in abstracts_list:
+        print(abstract, '\n')
     
-    nlp = spacy.load("en_core_web_sm")
-    texts = []
-    with open(file_name, 'r', encoding='utf-8') as file:
-        lines = file.readlines()
-        for line in lines:
-            json_obj = json.loads(line.strip())
-            text = json_obj.get('text', '')
-            doc = nlp(text)
-            if doc is not None:
-                texts[doc] = None
-
-    return texts
-
-file = 'dutch_database'
-texts = read_file(file)
-print(texts[:5])
-
+    return abstracts_list
