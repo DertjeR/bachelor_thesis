@@ -1,3 +1,4 @@
+# TODO have to be dictionaries where you can loop through
 article = "de"
 preposition = "naar"
 

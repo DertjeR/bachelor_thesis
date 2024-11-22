@@ -36,10 +36,10 @@ Number oriented steganography
 ### Dependencies
 
 This program complies with the following requirements:
-* libraries: sys, pandas, nltk, wikiextractor
+* libraries: sys, pandas, nltk, wikiextractor, wget, spacy, json, xml.etree.ElementTree, os
 * python version: 3.8
 
-### Installing
+### Installing <- old version
 To use the program in your terminal go to your preferred repository
 * Clone the program into your repository with the command ```git clone https://github.com/DertjeR/bachelor_thesis.git```
 * Navigate to the program repository with the command ```cd bachelor_thesis```
@@ -48,11 +48,19 @@ To use the program in your terminal go to your preferred repository
 * Download the file 'nlwiki-latest-pages-articles-multistream.xml.bz2' to get the newest articles
 * Remove the file containing the existing database 'dutch_database'
 * Unfold all articles:
-    * To save the full extracted dump and unfold it, in your terminal run ```wikiextractor nlwiki-20241101-pages-articles-multistream.xml.bz2 -o dutch_database```.
+    * To save the full extracted dump and unfold it, in your terminal run ```wikiextractor nlwiki-latest-pages-articles-multistream.xml.bz2 -o dutch_database```.
     * The file will unfold into multiple .txt files that contain multiple articles each.
     * Depending on your machine, unfolding the full dump will take around 10 - 30 minutes and will return about 1 million articles.
 * Unfold only a number of articles
-    * To shorten the process and extract a smaller database to ensure time efficiency. When you have a size of the database that you want (check your repository) stop the unfolding process with the keyboard interrupt `Ctrl + C`
+    * To shorten the process and extract a smaller database to ensure time efficiency. When you have a size of the database that you want (check your repository) stop the unfolding process with the keyboard interrupt `Ctrl + C` on windows.
+
+
+### Installing 2 <- CORRECT
+abstract wikipedia file (smaller)
+download on mac: curl -o /Users/dertje/Documents/Informatiekunde/Year3/thesis/bachelor_thesis/database.xml.gz https://dumps.wikimedia.org/nlwiki/latest/nlwiki-latest-abstract.xml.gz
+download on windows: wget -P /Users/dertje/Documents/Informatiekunde/Year3/thesis/bachelor_thesis https://dumps.wikimedia.org/nlwiki/latest/nlwiki-latest-abstract.xml.gz
+
+run _get_database.py to extract abstracts and output a list where each abstract is an element in the list
 
 
 ### Executing program
