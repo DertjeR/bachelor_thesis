@@ -19,9 +19,10 @@ def make_database(gz_file) -> List[str]:
                 break
 
             elem.clear()
-
-    # For test purposes
-    for abstract in abstracts_list:
-        print(abstract, '\n')
     
     return abstracts_list
+
+database = make_database('database.xml.gz')
+# for abstract in database:
+#     print(abstract)
+print(database)
