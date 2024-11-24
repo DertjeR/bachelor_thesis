@@ -1,0 +1,8 @@
+Hij was zeer invloedrijk in de ontwikkeling van de
+theoretische computerwetenschap, door de concepten van algoritme en
+berekenbaarheid te formaliseren met de door hem ontwikkelde Turing-machine,
+waardoor hij kan worden beschouwd als een pionier van de moderne computer.',
+'Een algoritme is een stappenplan bestaande uit een set regels in vaste volgorde
+om tot een oplossing te komen en het einddoel te bereiken. Het wordt ingezet als
+een handig hulpmiddel bij eenvoudige tot complexe problemen of situaties van het
+dagelijks leven en de digitale vraagstukken.
