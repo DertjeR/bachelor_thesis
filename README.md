@@ -36,7 +36,7 @@ Number oriented steganography
 ### Dependencies
 
 This program complies with the following requirements:
-* libraries: sys, pandas, nltk, wikiextractor, wget, spacy, json, xml.etree.ElementTree, os
+* libraries: sys, pandas, nltk, wikiextractor, wget, spacy, json, xml.etree.ElementTree, os, spacy, 'en_core_web_sm'
 * python version: 3.8
 
 ### Installing <- old version

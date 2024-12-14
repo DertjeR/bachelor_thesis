@@ -12,6 +12,7 @@ def text_to_binary(message):
         _type_: _description_
     """
     binary_message = ''.join(f"{ord(char):08b}" for char in message)
+    print(binary_message) # For debugging purposes
     binary_chunks = [binary_message[i:i + 2] for i in range(
         0, len(binary_message), 2)]  # 2-bit chunks
     print(f"Binary Chunks: {binary_chunks}")  # For debugging purposes
@@ -41,6 +42,35 @@ def generate_sentence(symbol):
 
     return structure
 
+def add_punctuation(generated_sentences):
+    """
+    Adds punctuation to sentences derived from the CFG structure.
+
+    Args:
+        generated_sentences (list): List of words generated from sentence structures.
+
+    Returns:
+        str: The punctuated text.
+    """
+    punctuated_text = []
+    sentence = []
+
+    for word in generated_sentences:
+        sentence.append(word)
+
+        # Check if the word completes a logical sentence
+        if word in {'.', '!', '?'} or len(sentence) >= 3:  # Assume a minimal sentence size of 3
+            punctuated_text.append(" ".join(sentence) + ".")
+            sentence = []
+
+    # Handle any remaining words (final fragment)
+    if sentence:
+        punctuated_text.append(" ".join(sentence) + ".")
+
+    return " ".join(punctuated_text)
+
+
+
 def equal_length(binary_values, sentence_structure):
     while len(binary_values) > len(sentence_structure):
         sentence_structure.extend(generate_sentence("S"))
@@ -52,6 +82,7 @@ def equal_length(binary_values, sentence_structure):
 def ciphertext(binary_chunks, sentence_structure):
     ciphertext = []
     sents_structure = deque(sentence_structure)
+    print(sents_structure) # for debugging purposes
     binary_values = deque(binary_chunks)
 
     while binary_values and sents_structure:
@@ -62,6 +93,7 @@ def ciphertext(binary_chunks, sentence_structure):
             ciphertext.append(det.get(binary_value, '?'))
         elif word_type == 'N':
             ciphertext.append(n.get(binary_value, '?'))
+            # ciphertext.append('.')
         elif word_type == 'Pron':
             ciphertext.append(pron.get(binary_value, '?'))
         elif word_type == 'Adj':
@@ -78,10 +110,10 @@ def ciphertext(binary_chunks, sentence_structure):
     # Check for leftovers and handle them if necessary
     if binary_values:
         print("Warning: Leftover binary values:", list(binary_values))
-    if sents_structure:
+    elif sents_structure:
         print("Warning: Leftover sentence structure:", list(sents_structure))
-
-    return ciphertext
+    else:
+        return ciphertext
 
 
 def main():
@@ -91,11 +123,13 @@ def main():
     equal_length_sentence = equal_length(binary_values, sentence_structure)
     stego = ciphertext(binary_values, equal_length_sentence)
 
-    encoded_message = ""
-    for word in stego:
-        encoded_message += word + " "
+    punctuated_message = add_punctuation(stego)
 
-    print(f"Encoded message: {encoded_message}")
+    # encoded_message = ""
+    # for word in stego:
+    #     encoded_message += word + " "
+
+    print(f"Encoded message: {punctuated_message}")
 
 if __name__ == "__main__":
     main()

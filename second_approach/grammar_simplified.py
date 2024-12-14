@@ -1,7 +1,14 @@
+# CFG = {
+#     "S": [["NP", "VP"]],
+#     "NP": [["Det", "N"], ["Pron"], ["Det", "Adj", "N"]],
+#     "VP": [["V", "Adv"], ["V", "NP"], ["V", "NP", "PP"]],
+#     "PP": [["Prep", "NP"]]
+# }
+
 CFG = {
     "S": [["NP", "VP"]],
-    "NP": [["Det", "N"], ["Pron"], ["Det", "Adj", "N"]],
-    "VP": [["V", "NP"], ["V", "Adv"], ["VP", "PP"]],
+    "NP": [["Det", "N"], ["Pron"]],
+    "VP": [["V", "Adv"], ["V", "NP"]],
     "PP": [["Prep", "NP"]]
 }
 
