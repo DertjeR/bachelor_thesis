@@ -1,9 +1,67 @@
 # encoding with invisible characters
-from collections import Counter, PriorityQueue
+from collections import Counter
+from queue import PriorityQueue
 from typing import Dict, Tuple
 import random
 
+# For better payload capacity
+class HuffmanNode:
+    def __init__(self, char: str, freq: int):
+        self.char = char
+        self.freq = freq
+        self.left = None
+        self.right = None
 
+    def __lt__(self, other):
+        return self.freq < other.freq
+
+def build_huffman_tree(text: str) -> HuffmanNode:
+    freq = Counter(text)
+    pq = PriorityQueue()
+
+    for char, count in freq.items():
+        pq.put(HuffmanNode(char, count))
+
+    while pq.qsize() > 1:
+        left = pq.get()
+        right = pq.get()
+        merged = HuffmanNode(None, left.freq + right.freq)
+        merged.left = left
+        merged.right = right
+        pq.put(merged)
+
+    return pq.get()
+
+def generate_huffman_codes(node: HuffmanNode, prefix: str = "", codebook: Dict[str, str] = None) -> Dict[str, str]:
+    if codebook is None:
+        codebook = {}
+    if node is not None:
+        if node.char is not None:
+            codebook[node.char] = prefix
+        generate_huffman_codes(node.left, prefix + "0", codebook)
+        generate_huffman_codes(node.right, prefix + "1", codebook)
+
+    return codebook
+
+def huffman_encode(text: str) -> Tuple[str, Dict[str, str]]:
+    tree = build_huffman_tree(text)
+    codebook = generate_huffman_codes(tree)
+    encoded_text = ''.join(codebook[char] for char in text)
+
+    return encoded_text, codebook
+
+def huffman_decode(encoded_text: str, codebook: Dict[str, str]) -> str:
+    reverse_codebook = {v: k for k, v in codebook.items()}
+    decoded_text = ""
+    buffer = ""
+
+    for bit in encoded_text:
+        buffer += bit
+        if buffer in reverse_codebook:
+            decoded_text += reverse_codebook[buffer]
+            buffer = ""
+
+    return decoded_text
 
 # For better security
 def dynamic_mapping(seed: int) -> Dict[str,str]:
@@ -28,57 +86,43 @@ def hamming_error_correction():
 
 
 def encode_message(text: str, message: str, inv_char: Dict[str, str]) -> str:
-    """Convert a string to binary and encode it with the invisible characters
-    in the dictionary.
+    # Compress message using Huffman encoding
+    huffman_encoded, codebook = huffman_encode(message)
+    print("Huffman Encoded Message:", huffman_encoded)  # For debugging
 
-    Args:
-        text (str): The cover text
-        message (str): The hidden message
-        inv_char (dict): Dictionary with bits mapped to invisible characters
+    # Embed Huffman-encoded binary message using invisible characters
+    encoded_text = text + ''.join(inv_char[bit] for bit in huffman_encoded)
 
-    Returns:
-        string: The stego text
-    """
-    # Convert message to binary
-    binary_message = ''.join(format(ord(char), '08b') for char in message)
-    print("This is the message in binary:", binary_message) # For debugging purposes
+    # Store the codebook for decoding
+    return encoded_text, codebook
 
-    # Embed binary message in zero-width characters
-    encoded_text = text + ''.join(inv_char[bit] for bit in binary_message)
-
-    return encoded_text
-
-def decode_message(encoded_text: str, inv_char: Dict[str, str]) -> str:
-    """Decode the stego text with the dictionary and retreive the hidden message
-
-    Args:
-        encoded_text (str): The stego text
-        inv_char (dict): Dictionary with bits mapped to invisible characters
-
-    Returns:
-        string: The hidden message
-    """
-    # Extract zero-width characters from the text
+def decode_message(encoded_text: str, inv_char: Dict[str, str], codebook: Dict[str, str]) -> str:
+    # Extract invisible characters
     invisible_chars = ''.join(c for c in encoded_text if c in inv_char.values())
 
-    # Convert back to binary
-    binary_message = ''.join('0' if c == '\u200C' else '1' for c in invisible_chars)
+    # Convert back to Huffman-encoded binary
+    inverted_mapping = {v: k for k, v in inv_char.items()}
+    huffman_encoded = ''.join(inverted_mapping[c] for c in invisible_chars)
 
-    # Decode binary to string
-    decoded_message = ''.join(chr(int(binary_message[i:i+8], 2)) for i in range(0, len(binary_message), 8))
+    # Decompress using Huffman decoding
+    decoded_message = huffman_decode(huffman_encoded, codebook)
 
     return decoded_message
 
 def main():
-    file_path = "input1.txt" # TODO Add condition where if a txt file is given in the command line to use that
+    file_path = "input1.txt"  # TODO: Add command-line argument for file input
     with open(file_path, "r", encoding="utf-8") as file:
         cover_text = file.read()
-    hidden_message = "Hallootjes woehoeeeeeeeee!" # TODO Add possibility for user to input hidden message in command line?
 
-    seed = 11
+    hidden_message = "Hallootjes woehoeeeeeeeee!"  # TODO: Add command-line argument for hidden message input
+
+    # Generate dynamic mapping
+    seed = 42  # TODO: Replace with user input or system-generated random seed
     invisible_characters = dynamic_mapping(seed)
-    stego_text = encode_message(cover_text, hidden_message, invisible_characters)
-    decoded_message = decode_message(stego_text, invisible_characters)
+
+    # Encode and decode message
+    stego_text, codebook = encode_message(cover_text, hidden_message, invisible_characters)
+    decoded_message = decode_message(stego_text, invisible_characters, codebook)
 
     print("Cover tekst:", cover_text)
     print("Stego text:", stego_text)
