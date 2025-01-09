@@ -63,6 +63,63 @@ def huffman_decode(encoded_text: str, codebook: Dict[str, str]) -> str:
 
     return decoded_text
 
+# For error correction
+def hamming_encode(data: str) -> str:
+    n = len(data)
+    r = 0
+    while (2**r < n + r + 1):  # Calculate number of parity bits
+        r += 1
+
+    hamming_code = [''] * (n + r)
+    j = 0
+
+    for i in range(1, len(hamming_code) + 1):
+        if i & (i - 1) == 0:  # Positions for parity bits
+            hamming_code[i - 1] = '0'
+        else:
+            hamming_code[i - 1] = data[j]
+            j += 1
+
+    # Set parity bits
+    for i in range(r):
+        pos = 2**i
+        parity = 0
+        for j in range(1, len(hamming_code) + 1):
+            if j & pos and hamming_code[j - 1] == '1':
+                parity ^= 1
+        hamming_code[pos - 1] = str(parity)
+
+    return ''.join(hamming_code)
+
+def hamming_decode(data: str) -> str:
+    n = len(data)
+    r = 0
+    while (2**r < n):
+        r += 1
+
+    error_pos = 0
+    for i in range(r):
+        pos = 2**i
+        parity = 0
+        for j in range(1, n + 1):
+            if j & pos and data[j - 1] == '1':
+                parity ^= 1
+        if parity != 0:
+            error_pos += pos
+
+    if error_pos > 0:  # Correct the error
+        print(f"Error detected at position: {error_pos}")
+        error_pos -= 1
+        data = data[:error_pos] + ('1' if data[error_pos] == '0' else '0') + data[error_pos + 1:]
+
+    # Extract the original data (remove parity bits)
+    original_data = ''
+    for i in range(1, n + 1):
+        if i & (i - 1) != 0:  # Ignore parity bits
+            original_data += data[i - 1]
+
+    return original_data
+
 # For better security
 def dynamic_mapping(seed: int) -> Dict[str,str]:
     """Generate a dynamic mapping for invisible characters based on a seed.
@@ -80,35 +137,37 @@ def dynamic_mapping(seed: int) -> Dict[str,str]:
 
     return {'0': invisible_characters[0], '1': invisible_characters[1]}
 
-# TODO to help prevent possible information loss 
-def hamming_error_correction():
-    pass
-
-
 def encode_message(text: str, message: str, inv_char: Dict[str, str]) -> str:
     # Compress message using Huffman encoding
     huffman_encoded, codebook = huffman_encode(message)
     print("Huffman Encoded Message:", huffman_encoded)  # For debugging
 
-    # Embed Huffman-encoded binary message using invisible characters
-    encoded_text = text + ''.join(inv_char[bit] for bit in huffman_encoded)
+    # Apply Hamming code to the Huffman-encoded message
+    hamming_encoded = hamming_encode(huffman_encoded)
+    print("Hamming Encoded Message:", hamming_encoded)  # For debugging
 
-    # Store the codebook for decoding
+    # Embed Hamming-encoded binary message using invisible characters
+    encoded_text = text + ''.join(inv_char[bit] for bit in hamming_encoded)
+
     return encoded_text, codebook
 
 def decode_message(encoded_text: str, inv_char: Dict[str, str], codebook: Dict[str, str]) -> str:
     # Extract invisible characters
     invisible_chars = ''.join(c for c in encoded_text if c in inv_char.values())
 
-    # Convert back to Huffman-encoded binary
+    # Convert back to Hamming-encoded binary
     inverted_mapping = {v: k for k, v in inv_char.items()}
-    huffman_encoded = ''.join(inverted_mapping[c] for c in invisible_chars)
+    hamming_encoded = ''.join(inverted_mapping[c] for c in invisible_chars)
+
+    # Decode Hamming code to recover the Huffman-encoded binary
+    huffman_encoded = hamming_decode(hamming_encoded)
+    print("Decoded Huffman Binary:", huffman_encoded)  # For debugging
 
     # Decompress using Huffman decoding
     decoded_message = huffman_decode(huffman_encoded, codebook)
-
     return decoded_message
 
+# Main function
 def main():
     file_path = "input1.txt"  # TODO: Add command-line argument for file input
     with open(file_path, "r", encoding="utf-8") as file:
