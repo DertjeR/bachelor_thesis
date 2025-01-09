@@ -3,7 +3,6 @@ from collections import Counter, PriorityQueue
 from typing import Dict, Tuple
 import random
 
-# For better payload capacity
 
 
 # For better security
