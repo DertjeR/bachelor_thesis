@@ -1,4 +1,6 @@
-# encoding with invisible characters
+#encoding with invisible characters, huffman ancoding,
+#hamming code and dynamic mapping
+
 from collections import Counter
 from queue import PriorityQueue
 from typing import Dict, Tuple
