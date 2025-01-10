@@ -1,6 +1,4 @@
-#encoding with invisible characters, huffman ancoding,
-#hamming code and dynamic mapping
-
+# encoding with invisible characters
 from collections import Counter
 from queue import PriorityQueue
 from typing import Dict, Tuple
@@ -18,6 +16,14 @@ class HuffmanNode:
         return self.freq < other.freq
 
 def build_huffman_tree(text: str) -> HuffmanNode:
+    """Build a Huffman tree for the given text.
+
+    Args:
+        text (str): The text to analyze and build a Huffman tree for.
+
+    Returns:
+        HuffmanNode: The root of the constructed Huffman tree.
+    """
     freq = Counter(text)
     pq = PriorityQueue()
 
@@ -34,7 +40,18 @@ def build_huffman_tree(text: str) -> HuffmanNode:
 
     return pq.get()
 
+
 def generate_huffman_codes(node: HuffmanNode, prefix: str = "", codebook: Dict[str, str] = None) -> Dict[str, str]:
+    """Generate Huffman codes for the characters in the tree.
+
+    Args:
+        node (HuffmanNode): The root node of the Huffman tree.
+        prefix (str, optional): The current prefix for codes. Defaults to "".
+        codebook (Dict[str, str], optional): A dictionary to store the generated codes. Defaults to None.
+
+    Returns:
+        Dict[str, str]: A dictionary mapping characters to their Huffman codes.
+    """
     if codebook is None:
         codebook = {}
     if node is not None:
@@ -45,14 +62,33 @@ def generate_huffman_codes(node: HuffmanNode, prefix: str = "", codebook: Dict[s
 
     return codebook
 
+
 def huffman_encode(text: str) -> Tuple[str, Dict[str, str]]:
+    """Encode a text using Huffman coding.
+
+    Args:
+        text (str): The text to encode.
+
+    Returns:
+        Tuple[str, Dict[str, str]]: A tuple containing the Huffman-encoded binary string and the codebook.
+    """
     tree = build_huffman_tree(text)
     codebook = generate_huffman_codes(tree)
     encoded_text = ''.join(codebook[char] for char in text)
 
     return encoded_text, codebook
 
+
 def huffman_decode(encoded_text: str, codebook: Dict[str, str]) -> str:
+    """Decode a Huffman-encoded string.
+
+    Args:
+        encoded_text (str): The binary string encoded with Huffman coding.
+        codebook (Dict[str, str]): The Huffman codebook used for encoding.
+
+    Returns:
+        str: The original decoded text.
+    """
     reverse_codebook = {v: k for k, v in codebook.items()}
     decoded_text = ""
     buffer = ""
@@ -65,111 +101,61 @@ def huffman_decode(encoded_text: str, codebook: Dict[str, str]) -> str:
 
     return decoded_text
 
-# For error correction
-def hamming_encode(data: str) -> str:
-    n = len(data)
-    r = 0
-    while (2**r < n + r + 1):  # Calculate number of parity bits
-        r += 1
 
-    hamming_code = [''] * (n + r)
-    j = 0
-
-    for i in range(1, len(hamming_code) + 1):
-        if i & (i - 1) == 0:  # Positions for parity bits
-            hamming_code[i - 1] = '0'
-        else:
-            hamming_code[i - 1] = data[j]
-            j += 1
-
-    # Set parity bits
-    for i in range(r):
-        pos = 2**i
-        parity = 0
-        for j in range(1, len(hamming_code) + 1):
-            if j & pos and hamming_code[j - 1] == '1':
-                parity ^= 1
-        hamming_code[pos - 1] = str(parity)
-
-    return ''.join(hamming_code)
-
-def hamming_decode(data: str) -> str:
-    n = len(data)
-    r = 0
-    while (2**r < n):
-        r += 1
-
-    error_pos = 0
-    for i in range(r):
-        pos = 2**i
-        parity = 0
-        for j in range(1, n + 1):
-            if j & pos and data[j - 1] == '1':
-                parity ^= 1
-        if parity != 0:
-            error_pos += pos
-
-    if error_pos > 0:  # Correct the error
-        print(f"Error detected at position: {error_pos}")
-        error_pos -= 1
-        data = data[:error_pos] + ('1' if data[error_pos] == '0' else '0') + data[error_pos + 1:]
-
-    # Extract the original data (remove parity bits)
-    original_data = ''
-    for i in range(1, n + 1):
-        if i & (i - 1) != 0:  # Ignore parity bits
-            original_data += data[i - 1]
-
-    return original_data
-
-# For better security
-def dynamic_mapping(seed: int) -> Dict[str,str]:
+def dynamic_mapping(seed: int) -> Dict[str, str]:
     """Generate a dynamic mapping for invisible characters based on a seed.
 
     Args:
         seed (int): The seed for the random number generator.
 
     Returns:
-        dict: A dictionary mapping bits ('0', '1') to invisible characters.
+        Dict[str, str]: A dictionary mapping bits ('0', '1') to zero-width characters.
     """
     random.seed(seed)
-    # Randomize the mapping
     invisible_characters = ['\u200C', '\u200B']  # ZWNJ and ZWSP
     random.shuffle(invisible_characters)
 
     return {'0': invisible_characters[0], '1': invisible_characters[1]}
 
-def encode_message(text: str, message: str, inv_char: Dict[str, str]) -> str:
-    # Compress message using Huffman encoding
+
+def encode_message(text: str, message: str, inv_char: Dict[str, str]) -> Tuple[str, Dict[str, str]]:
+    """Encode a hidden message into cover text using invisible characters.
+
+    Args:
+        text (str): The cover text to embed the message into.
+        message (str): The hidden message to encode.
+        inv_char (Dict[str, str]): A dictionary mapping bits ('0', '1') to invisible characters.
+
+    Returns:
+        Tuple[str, Dict[str, str]]: A tuple containing the stego text with the hidden message 
+        and the Huffman codebook used for encoding.
+    """
     huffman_encoded, codebook = huffman_encode(message)
     print("Huffman Encoded Message:", huffman_encoded)  # For debugging
 
-    # Apply Hamming code to the Huffman-encoded message
-    hamming_encoded = hamming_encode(huffman_encoded)
-    print("Hamming Encoded Message:", hamming_encoded)  # For debugging
-
-    # Embed Hamming-encoded binary message using invisible characters
-    encoded_text = text + ''.join(inv_char[bit] for bit in hamming_encoded)
+    encoded_text = text + ''.join(inv_char[bit] for bit in huffman_encoded)
 
     return encoded_text, codebook
 
+
 def decode_message(encoded_text: str, inv_char: Dict[str, str], codebook: Dict[str, str]) -> str:
-    # Extract invisible characters
+    """Decode a hidden message from stego text using invisible characters.
+
+    Args:
+        encoded_text (str): The stego text containing the hidden message.
+        inv_char (Dict[str, str]): A dictionary mapping bits ('0', '1') to invisible characters.
+        codebook (Dict[str, str]): The Huffman codebook used for encoding.
+
+    Returns:
+        str: The decoded hidden message.
+    """
     invisible_chars = ''.join(c for c in encoded_text if c in inv_char.values())
-
-    # Convert back to Hamming-encoded binary
     inverted_mapping = {v: k for k, v in inv_char.items()}
-    hamming_encoded = ''.join(inverted_mapping[c] for c in invisible_chars)
-
-    # Decode Hamming code to recover the Huffman-encoded binary
-    huffman_encoded = hamming_decode(hamming_encoded)
-    print("Decoded Huffman Binary:", huffman_encoded)  # For debugging
-
-    # Decompress using Huffman decoding
+    huffman_encoded = ''.join(inverted_mapping[c] for c in invisible_chars)
     decoded_message = huffman_decode(huffman_encoded, codebook)
+
     return decoded_message
 
-# Main function
 def main():
     file_path = "input1.txt"  # TODO: Add command-line argument for file input
     with open(file_path, "r", encoding="utf-8") as file:
@@ -191,4 +177,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
