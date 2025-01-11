@@ -11,7 +11,6 @@ def encode_message(cover_text, hidden_message, inv_chars):
     """
     # Convert message to binary
     binary_message = ''.join(format(ord(char), '08b') for char in hidden_message)
-    print("This is the message in binary:", binary_message)
     # Embed binary message in zero-width characters
     stego_object = cover_text + ''.join(inv_chars[bit] for bit in binary_message)
 
@@ -37,7 +36,7 @@ def decode_message(stego_object, inv_chars):
     return decoded_hidden_message
 
 def main():
-    file_path = "input1.txt"  # TODO: Add command-line argument for file input
+    file_path = "input_texts/smallest_covertext.txt"  # TODO: Add command-line argument for file input
     with open(file_path, "r", encoding="utf-8") as file:
         cover_text = file.read()
 

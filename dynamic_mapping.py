@@ -36,8 +36,6 @@ def encode_message(text: str, message: str, inv_char: Dict[str, str]) -> str:
         str: The resulting stego text containing the hidden message.
     """
     binary_message = ''.join(format(ord(char), '08b') for char in message)
-    print("This is the message in binary:", binary_message)  # For debugging purposes
-
     encoded_text = text + ''.join(inv_char[bit] for bit in binary_message)
 
     return encoded_text
@@ -62,7 +60,7 @@ def decode_message(encoded_text: str, inv_char: Dict[str, str]) -> str:
     return decoded_message
 
 def main():
-    file_path = "input1.txt" # TODO Add condition where if a txt file is given in the command line to use that
+    file_path = "input_texts/smallest_covertext.txt" # TODO Add condition where if a txt file is given in the command line to use that
     with open(file_path, "r", encoding="utf-8") as file:
         cover_text = file.read()
     hidden_message = "Hallootjes woehoeeeeeeeee!" # TODO Add possibility for user to input hidden message in command line?
