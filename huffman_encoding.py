@@ -74,9 +74,9 @@ def huffman_encode(text: str) -> Tuple[str, Dict[str, str]]:
     """
     tree = build_huffman_tree(text)
     codebook = generate_huffman_codes(tree)
-    encoded_text = ''.join(codebook[char] for char in text)
+    huffman_encoded = ''.join(codebook[char] for char in text)
 
-    return encoded_text, codebook
+    return huffman_encoded, codebook
 
 
 def huffman_decode(encoded_text: str, codebook: Dict[str, str]) -> str:
@@ -131,8 +131,6 @@ def encode_message(text: str, message: str, inv_char: Dict[str, str]) -> Tuple[s
         and the Huffman codebook used for encoding.
     """
     huffman_encoded, codebook = huffman_encode(message)
-    print("Huffman Encoded Message:", huffman_encoded)  # For debugging
-
     encoded_text = text + ''.join(inv_char[bit] for bit in huffman_encoded)
 
     return encoded_text, codebook
@@ -157,7 +155,7 @@ def decode_message(encoded_text: str, inv_char: Dict[str, str], codebook: Dict[s
     return decoded_message
 
 def main():
-    file_path = "input1.txt"  # TODO: Add command-line argument for file input
+    file_path = "cover_texts/small_covertext.txt"  # TODO: Add command-line argument for file input
     with open(file_path, "r", encoding="utf-8") as file:
         cover_text = file.read()
 
