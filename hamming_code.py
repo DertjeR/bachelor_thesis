@@ -183,7 +183,6 @@ def hamming_decode(data: str) -> str:
             error_pos += pos
 
     if error_pos > 0:
-        print(f"Error detected at position: {error_pos}")
         error_pos -= 1
         data = data[:error_pos] + ('1' if data[error_pos] == '0' else '0') + data[error_pos + 1:]
 
@@ -246,7 +245,7 @@ def decode_message(stego_object: str, inv_chars: Dict[str, str], codebook: Dict[
     return decoded_hidden_message
 
 def main():
-    file_path = "input1.txt"  # TODO: Add command-line argument for file input
+    file_path = "input_texts/smallest_covertext.txt"  # TODO: Add command-line argument for file input
     with open(file_path, "r", encoding="utf-8") as file:
         cover_text = file.read()
 
@@ -262,6 +261,11 @@ def main():
     print("Stego text:", stego_object)
     print("Codebook:", codebook)
     print("Decoded message:", decoded_hidden_message)
+
+    if hidden_message == decoded_hidden_message:
+        print("Message successfully hidden and retrieved!")
+    else:
+        print("Error: Message not successfully hidden and retrieved.")
 
 
 if __name__ == "__main__":
