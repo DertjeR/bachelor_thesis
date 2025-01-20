@@ -1,4 +1,4 @@
-from dynamic_mapping import *
+from strategies.dynamic_mapping import *
 import os
 
 def readability(cover_text, stego_text):
@@ -37,10 +37,10 @@ def main():
 
     # Seed for dynamic mapping
     seed = 11
-    invisible_chars = {'0': '\u200C', '1': '\u200B'}
+    invisible_chars = dynamic_mapping(seed)
 
     # Results directory
-    results_dir = "evaluations/basic_approach"
+    results_dir = "evaluations/dynamic_mapping"
     os.makedirs(results_dir, exist_ok=True)  # Create directory if it doesn't exist
 
     # Iterate through all combinations of cover text and hidden message files

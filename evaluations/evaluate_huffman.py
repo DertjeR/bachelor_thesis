@@ -1,4 +1,4 @@
-from huffman_encoding import *
+from strategies.huffman_encoding import *
 import os
 
 def readability(cover_text, stego_text):
@@ -20,7 +20,7 @@ def test_payload_capacity(cover_text, hidden_message, inv_chars, use_huffman=Fal
         compressed_size = len(hidden_message) * 8  # Bits
 
     # Encode the (compressed) message into the cover text
-    stego_text, _ = encode_message(cover_text, compressed_message, inv_chars)
+    stego_text = encode_message(cover_text, compressed_message, inv_chars)
 
     # Calculate payload capacity
     cover_size = len(cover_text) * 8  # Bits
@@ -49,7 +49,7 @@ def main():
     invisible_chars = dynamic_mapping(seed)
 
     # Output file to store all results
-    output_file_path = "evaluations/huffman_encoding.txt"
+    output_file_path = "results/huffman_encoding.txt"
     os.makedirs(os.path.dirname(output_file_path), exist_ok=True)  # Create directory if it doesn't exist
 
     with open(output_file_path, "w", encoding="utf-8") as output_file:
