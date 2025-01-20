@@ -1,5 +1,4 @@
 from typing import Dict
-import logging
 
 
 def encode_message(cover_text: str, hidden_message: str,
@@ -65,21 +64,21 @@ def decode_message(stego_obj: str, inv_chars: Dict[str, str]) -> str:
 
 
 def main():
-    # TODO: Add command-line argument for file input
-    file_path = "cover_texts/small_covertext.txt"
+    file_path = "./cover_texts/small_covertext.txt"
     with open(file_path, "r", encoding="utf-8") as file:
         cover_text = file.read()
 
-    # TODO: Add command-line argument for hidden message input
-    hidden_message = "hoi"
+    file_path = "./hidden_messages/800bits_message.txt"
+    with open(file_path, "r", encoding="utf-8") as file:
+        hidden_message = file.read()
 
     invisible_chars = {'0': '\u200C', '1': '\u200B'}
     stego_object = encode_message(cover_text, hidden_message, invisible_chars)
     decoded_hidden_message = decode_message(stego_object, invisible_chars)
 
     # For debugging purposes
-    logging.info(f"Verborgen bericht: {hidden_message}")
-    print("Cover tekst:", cover_text)
+    print("Hidden message:", hidden_message)
+    print("Cover text:", cover_text)
     print("Stego object:", stego_object)
     print("Gedecodeerd bericht:", decoded_hidden_message)
 

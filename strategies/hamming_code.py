@@ -267,20 +267,25 @@ def decode_message(stego_object: str, inv_chars: Dict[str, str]) -> str:
 
 
 def main():
-    file_path = "cover_texts/small_covertext.txt"
+    file_path = "./cover_texts/small_covertext.txt"
     with open(file_path, "r", encoding="utf-8") as file:
         cover_text = file.read()
 
-    hidden_message = "Hallootjes woehoeeeeeeeee!"
-    seed = 42
+    file_path = "./hidden_messages/800bits_message.txt"
+    with open(file_path, "r", encoding="utf-8") as file:
+        hidden_message = file.read()
+
+    seed = 11
     invisible_chars = dynamic_mapping(seed)
 
     stego_object = encode_message(cover_text, hidden_message, invisible_chars)
     decoded_hidden_message = decode_message(stego_object, invisible_chars)
 
+    # For debugging purposes
+    print("Hidden message:", hidden_message)
     print("Cover text:", cover_text)
-    print("Stego text:", stego_object)
-    print("Decoded message:", decoded_hidden_message)
+    print("Stego object:", stego_object)
+    print("Gedecodeerd bericht:", decoded_hidden_message)
 
     if hidden_message == decoded_hidden_message:
         print("Message successfully hidden and retrieved!")

@@ -210,22 +210,24 @@ def decode_message(stego_object: str, inv_chars: Dict[str, str]) -> str:
 
 
 def main():
-    # TODO Add command-line argument for file input
-    file_path = "cover_texts/long_covertext.txt"
+    file_path = "./cover_texts/small_covertext.txt"
     with open(file_path, "r", encoding="utf-8") as file:
         cover_text = file.read()
 
-    # TODO Add possibility for user to input hidden message in command line?
-    hidden_message = "Hallootjes woehoeeeeeeeee!"
+    file_path = "./hidden_messages/800bits_message.txt"
+    with open(file_path, "r", encoding="utf-8") as file:
+        hidden_message = file.read()
 
-    seed = 42
+    seed = 11
     invisible_chars = dynamic_mapping(seed)
     stego_object = encode_message(cover_text, hidden_message, invisible_chars)
     decoded_message = decode_message(stego_object, invisible_chars)
 
-    # Output results
-    print("Stego text:", stego_object)
-    print("Decoded message:", decoded_message)
+    # For debugging purposes
+    print("Hidden message:", hidden_message)
+    print("Cover text:", cover_text)
+    print("Stego object:", stego_object)
+    print("Gedecodeerd bericht:", decoded_message)
 
     if hidden_message == decoded_message:
         print("Message successfully hidden and retrieved!")
